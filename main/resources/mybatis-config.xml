@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD SQL Map Config 3.0//EN"  
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- plugins在配置文件中的位置必须符合要求，否则会报错，顺序如下: properties?, settings?, typeAliases?, 
+		typeHandlers?, objectFactory?,objectWrapperFactory?, plugins?, environments?, 
+		databaseIdProvider?, mappers? -->
+
+	<plugins>
+		<!-- 分页助手 -->
+		<!-- com.github.pagehelper为PageHelper类所在包名 -->
+		<plugin interceptor="com.github.pagehelper.PageInterceptor">
+			<!-- 使用下面的方式配置参数，后面会有所有的参数介绍 -->
+
+			<!-- 当参数page大于最大值时会返回最后一页,小于最小值会返回第一页 -->
+			<property name="reasonable" value="true" />
+			<!-- 设置使用哪种数据库,不配置也会自动检测 -->
+			<property name="helperDialect" value="mysql" />
+			<!-- 这个好像不起作用,当该参数设置为 true 时，如果 pageSize=0 或者 RowBounds.limit = 0 就会查询出全部的结果 -->
+			<property name="pageSizeZero" value="true" />
+			<!-- 默认值为 false。设置为 true 时，允许在运行时根据多数据源自动识别对应方言的分页 -->
+			<property name="autoRuntimeDialect" value="false" />
+		</plugin>
+
+	
+
+
+
+	</plugins>
+	
+	
+</configuration>

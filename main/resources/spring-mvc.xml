@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<!-- 问题: 若 Spring 的 IOC 容器和 SpringMVC 的 IOC 容器扫描的包有重合的部分, 就会导致有的 bean 会被创建 
+		2 次.
+                   解决: 1. 使 Spring 的 IOC 容器扫描的包和 SpringMVC 的 IOC 容器扫描的包没有重合的部分. 2. 使用 exclude-filter 
+		和 include-filter 子节点来规定只能扫描的注解 -->
+
+	<!-- SpringMVC 的 IOC 容器中的 bean 可以来引用 Spring IOC 容器中的 bean. 
+	         返回来呢 ? 反之则不行.Spring IOC 容器中的 bean 却不能来引用 SpringMVC IOC 容器中的 bean! -->
+
+	<!-- 使得@Controller 等注解生效 -->
+	<mvc:annotation-driven />
+
+   <!-- 只扫描Controller -->
+	<context:component-scan base-package="com.szx.*"
+		use-default-filters="false">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- 拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/login" />
+			<mvc:exclude-mapping path="/ajax_login" />
+			<mvc:exclude-mapping path="/top_loginPage" />
+			<mvc:exclude-mapping path="/main_loginPage" />
+			<mvc:exclude-mapping path="/left" />
+			<mvc:exclude-mapping path="/experimentPage" />
+			<mvc:exclude-mapping path="/top_experimentPage" />
+			<mvc:exclude-mapping path="/main_experimentPage" />
+			<mvc:exclude-mapping path="/left_experimentPage" />
+			<mvc:exclude-mapping path="/right_experimentPage" />
+			<mvc:exclude-mapping path="/experiment/*" />
+			<mvc:exclude-mapping path="/error" />
+			<mvc:exclude-mapping path="/test" />
+			<bean class="com.szx.interceptor.LoginInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- 异常统一处理 -->
+	<bean
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionAttribute" value="ex"></property>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="java.lang.Exception">commonPages/err</prop>
+			</props>
+		</property>
+
+	</bean>
+
+
+	<!-- 视图配置 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/pages/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+
+</beans>
