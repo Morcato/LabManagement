@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szx.dao.ExperimentDetailMapper">
+	<resultMap type="com.szx.entity.ExperimentDetail" id="experimentDetail">
+		<id column="experimentId" property="id" />
+		<result column="experimentName" property="name" />
+		<result column="teacher" property="teacher" />
+		<result column="nowPhase" property="nowPhase" />
+		<result column="alreadyPhase" property="alreadyPhase" />
+		<result column="locationName" property="location" />
+		<result column="introduction" property="introduction" />
+		<result column="laboratoryName" property="laboratoryName" />
+		<result column="college" property="college" />
+		<collection property="devices" ofType="com.szx.po.Device">
+			<id column="deviceId" property="id" />
+			<result column="deviceName" property="name" />
+			<result column="devicePrice" property="price" />
+		</collection>
+	</resultMap>
+	<select id="getExperimentDetailByExperimentId" resultMap="experimentDetail"
+		parameterType="int">
+		SELECT
+		experiment.id experimentId,
+		experiment.`name`
+		experimentName,
+		experiment.teacher teacher,
+		experiment.duration duration,
+		experiment.already_phase+1
+		nowPhase,
+		location.`name` locationName,
+		laboratory.`name`
+		laboratoryName,
+		laboratory.college college
+		FROM
+		experiment
+		JOIN location
+		ON
+		experiment.locationId =
+		location.id
+		JOIN laboratory ON
+		location.laboratory_id = laboratory.id
+		WHERE experiment.id =
+		#{experimentId}
+	</select>
+	<select id="selectExperimentDetailAndDevice" resultMap="experimentDetail"
+		parameterType="int">
+		SELECT
+		experiment.id experimentId,
+		experiment.`name`
+		experimentName,
+		experiment.teacher teacher,
+		experiment.duration duration,
+		experiment.already_phase
+		alreadyPhase,
+		location.`name` locationName,
+		experiment.introduction,
+		laboratory.`name` laboratoryName,
+		laboratory.college college,
+		device.`name` deviceName,
+		device.Id deviceId,
+		device.price devicePrice
+		FROM
+		experiment
+		JOIN location ON
+		experiment.locationId =
+		location.id
+		JOIN laboratory ON
+		laboratory.id = location.laboratory_id
+		LEFT
+		JOIN experiment_devicerel ON
+		experiment.id =
+		experiment_devicerel.experimentId
+		LEFT JOIN device ON
+		device.Id =
+		experiment_devicerel.deviceId
+		WHERE experiment.id =
+		#{experimentId}
+	</select>
+</mapper>

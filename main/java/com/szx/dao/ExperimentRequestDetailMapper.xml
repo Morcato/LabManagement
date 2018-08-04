@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szx.dao.ExperimentRequestDetailMapper">
+	<resultMap type="com.szx.entity.ExperimentRequestDetail" id="experimentRequestDetail">
+		<id column="requestId" property="id" />
+		<result column="experimentName" property="experimentName" />
+		<result column="experimentId" property="experimentId" />
+		<result column="phase" property="phase" />
+		<result column="requestTime" property="requestTime" />
+		<result column="userName" property="userName" />
+		<result column="status" property="status" />
+		<result column="remark" property="remark" />
+		<result column="locationName" property="location" />
+		<result column="userNo" property="userNo" />
+		<result column="userCollege" property="userCollege" />
+		<result column="number" property="number" />
+
+	</resultMap>
+	<select id="selectRequestDetailsByUserNo" resultMap="experimentRequestDetail"
+		parameterType="String">
+		SELECT
+		experiment_execution_requestion.id requestId,
+		experiment.`name` experimentName,
+		experimental_execution.phase phase,
+		location.`name` locationName,
+		experiment_execution_requestion.request_time requestTime,
+		`user`.userName userName,
+		experiment_execution_requestion.`status`
+		`status`,
+		experiment_execution_requestion.remark remark
+		FROM
+		experiment_execution_requestion
+		JOIN experimental_execution ON
+		experimental_execution_id =
+		experimental_execution.id
+		JOIN experiment ON
+		experimental_execution.experimentId = experiment.id
+		JOIN `user` ON
+		experiment_execution_requestion.userNo = `user`.userNo
+		JOIN location ON
+		experiment.locationId = location.id
+		WHERE
+		experiment_execution_requestion.userNo = #{String}
+		ORDER BY
+		requestTime
+		DESC
+	</select>
+	<select id="selectAllRequestByStatus" resultMap="experimentRequestDetail"
+		parameterType="Integer">
+		SELECT
+		experiment_execution_requestion.id requestId,
+		experiment.`name` experimentName,
+		experiment.id experimentId,
+		experimental_execution.phase phase,
+		location.`name` locationName,
+		experiment_execution_requestion.request_time requestTime,
+		`user`.userName userName,
+		experiment_execution_requestion.`status` `status`,
+		experiment_execution_requestion.remark remark,
+		`user`.userNo userNo,
+		`user`.college userCollege,
+		experimental_execution.number number,
+		(SELECT
+		COUNT(*)
+		FROM
+		experiment_execution_requestion
+		WHERE
+		experimental_execution_id = experimental_execution.id
+		AND `status` = 0 | 1 )bookNumber
+		FROM
+		experiment_execution_requestion
+		JOIN experimental_execution ON experimental_execution_id =
+		experimental_execution.id
+		JOIN experiment ON experimental_execution.experimentId = experiment.id
+		JOIN `user` ON experiment_execution_requestion.userNo = `user`.userNo
+		JOIN location ON experiment.locationId = location.id
+		WHERE
+		`status` = #{status}
+		ORDER BY
+		requestTime DESC
+	</select>
+	<select id="selectAllAlreadyRequest" resultMap="experimentRequestDetail">
+		SELECT
+		experiment_execution_requestion.id requestId,
+		experiment.`name`
+		experimentName,
+		experiment.id experimentId,
+		experimental_execution.phase phase,
+		location.`name` locationName,
+		experiment_execution_requestion.request_time requestTime,
+		`user`.userName userName,
+		experiment_execution_requestion.`status`
+		`status`,
+		experiment_execution_requestion.remark remark,
+		`user`.userNo
+		userNo,
+		`user`.college userCollege,
+		experimental_execution.number number
+		FROM
+		experiment_execution_requestion
+		JOIN experimental_execution
+		ON
+		experimental_execution_id =
+		experimental_execution.id
+		JOIN experiment
+		ON
+		experimental_execution.experimentId = experiment.id
+		JOIN `user` ON
+		experiment_execution_requestion.userNo = `user`.userNo
+		JOIN location ON
+		experiment.locationId = location.id
+		WHERE
+		`status` != 0
+		ORDER BY
+		requestTime DESC
+	</select>
+</mapper>

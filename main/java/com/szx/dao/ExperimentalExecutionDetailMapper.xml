@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.szx.dao.ExperimentalExecutionDetailMapper">
+	<resultMap type="com.szx.entity.ExperimentalExecutionDetail"
+		id="experimentalExecutionDetail">
+		<id column="id" property="id" />
+		<result column="name" property="experimentName" />
+		<result column="number" property="number" />
+		<result column="bookNumber" property="bookNumber" />
+		<result column="deadline" property="deadline" />
+		<result column="startTime" property="startTime" />
+		<result column="phase" property="phase" />
+		<result column="teacher" property="teacherName" />
+
+	</resultMap>
+	<select id="selectAll" resultMap="experimentalExecutionDetail">
+		SELECT
+		experimental_execution.id ,
+		experiment.`name`,
+		experiment.duration duration,
+		experimental_execution.number,
+		(
+		SELECT
+		COUNT(*)
+		FROM
+		experiment_execution_requestion
+		WHERE
+		experimental_execution_id =
+		experimental_execution.id
+		AND `status` = 0 | 1
+		) bookNumber,
+		experimental_execution.deadline,
+		experimental_execution.startTime,
+		experimental_execution.phase,
+		experiment.teacher
+		FROM
+		experiment
+		JOIN
+		experimental_execution ON experiment.id =
+		experimental_execution.experimentId
+		ORDER BY
+		experimental_execution.deadline >= CURDATE() DESC,
+		experimental_execution.deadline ASC
+	</select>
+
+	<select id="countByLocationNameAndStartTime" resultType="java.lang.Integer" >
+		SELECT
+		COUNT(*)
+		FROM
+		experimental_execution
+		JOIN experiment ON experiment.id =
+		experimental_execution.experimentId
+		JOIN location ON
+		experiment.locationId = location.id
+		WHERE location.`name` = #{location}
+		AND DATE(experimental_execution.startTime) = #{startTime}
+	</select>
+</mapper>
